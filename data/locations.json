@@ -1,0 +1,63 @@
+[
+  {
+    "country": "Pakistan",
+    "iso": "PK",
+    "timezone": "Asia/Karachi",
+    "cities": [
+      { "name": "Karachi", "lat": 24.86, "lon": 67.01 },
+      { "name": "Lahore", "lat": 31.55, "lon": 74.34 },
+      { "name": "Faisalabad", "lat": 31.42, "lon": 73.08 },
+      { "name": "Rawalpindi", "lat": 33.60, "lon": 73.04 },
+      { "name": "Gujranwala", "lat": 32.16, "lon": 74.19 },
+      { "name": "Islamabad", "lat": 33.69, "lon": 73.05, "note": "capital" }
+    ]
+  },
+  {
+    "country": "Germany",
+    "iso": "DE",
+    "timezone": "Europe/Berlin",
+    "cities": [
+      { "name": "Berlin", "lat": 52.52, "lon": 13.41 },
+      { "name": "Hamburg", "lat": 53.55, "lon": 9.99 },
+      { "name": "Munich", "lat": 48.14, "lon": 11.58 },
+      { "name": "Cologne", "lat": 50.94, "lon": 6.96 },
+      { "name": "Frankfurt am Main", "lat": 50.11, "lon": 8.68 }
+    ]
+  },
+  {
+    "country": "Romania",
+    "iso": "RO",
+    "timezone": "Europe/Bucharest",
+    "cities": [
+      { "name": "Bucharest", "lat": 44.43, "lon": 26.10 },
+      { "name": "Cluj-Napoca", "lat": 46.77, "lon": 23.60 },
+      { "name": "Iași", "lat": 47.16, "lon": 27.59 },
+      { "name": "Constanța", "lat": 44.18, "lon": 28.63 },
+      { "name": "Timișoara", "lat": 45.75, "lon": 21.23 }
+    ]
+  },
+  {
+    "country": "Bulgaria",
+    "iso": "BG",
+    "timezone": "Europe/Sofia",
+    "cities": [
+      { "name": "Sofia", "lat": 42.70, "lon": 23.32 },
+      { "name": "Plovdiv", "lat": 42.15, "lon": 24.75 },
+      { "name": "Varna", "lat": 43.21, "lon": 27.91 },
+      { "name": "Burgas", "lat": 42.51, "lon": 27.47 },
+      { "name": "Ruse", "lat": 43.85, "lon": 25.97 }
+    ]
+  },
+  {
+    "country": "Netherlands",
+    "iso": "NL",
+    "timezone": "Europe/Amsterdam",
+    "cities": [
+      { "name": "Amsterdam", "lat": 52.37, "lon": 4.90 },
+      { "name": "Rotterdam", "lat": 51.92, "lon": 4.48 },
+      { "name": "The Hague", "lat": 52.08, "lon": 4.30 },
+      { "name": "Utrecht", "lat": 52.09, "lon": 5.12 },
+      { "name": "Eindhoven", "lat": 51.44, "lon": 5.47 }
+    ]
+  }
+]
