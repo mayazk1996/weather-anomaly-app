@@ -89,9 +89,10 @@ and approved by the user, so don't change it without asking.
   than usual", 25th–75th is "typical", 75th–90th is "warmer than usual", and
   above the 90th is "unusually warm".
 - **Trend description (the only exception to the same-date rule):** to smooth out
-  noise, use a window of **±7 days** around today's date in each year. Compare the
-  average over the last 15 years with earlier periods (by decade), and use a
-  linear trend in °C per decade, for both highs and lows. If the recent change is
+  noise, use a window of **±7 days** around today's date in each year. For both
+  highs and lows, compare the average over the last 15 years with (a) the 15 years
+  before that and (b) the 1951–1980 reference period, and give the linear trend
+  since 1940 in °C per decade. If the recent change is
   less than 0.5 °C, describe it as "similar to recent years". Mention in the text
   that the trend is based on the week either side of the date.
 - **29 February:** compare it with 28 February in non-leap years.
@@ -147,4 +148,4 @@ and approved by the user, so don't change it without asking.
 ## Commands
 
 - Run locally: `python3 -m http.server 8000`, then open http://localhost:8000
-- Run tests: _to be added_
+- Run tests: `npm test` (Node's built-in test runner, no dependencies)
