@@ -1,4 +1,4 @@
-# CLAUDE.md
+# Weather Anomaly App
 
 Guidance for Claude when working in this repository.
 
