@@ -131,6 +131,7 @@ export function trend(series) {
   const baseline = inRange(BASELINE[0], BASELINE[1]);
   return {
     recentRange: [last - RECENT_YEARS + 1, last],
+    previousRange: [last - 2 * RECENT_YEARS + 1, last - RECENT_YEARS],
     recentMean: mean(recent),
     vsPrevious: mean(recent) - mean(previous),
     vsBaseline: baseline.length ? mean(recent) - mean(baseline) : null,
@@ -138,12 +139,39 @@ export function trend(series) {
   };
 }
 
-const change = (d) =>
-  Math.abs(d) < SIMILAR_THRESHOLD
-    ? 'about the same as'
-    : `about ${fmt(Math.abs(d))} °C ${d > 0 ? 'warmer than' : 'cooler than'}`;
+const range = ([a, b]) => `${a}–${b}`;
+
+/**
+ * One complete half of a comparison sentence. `ref` names what we compare with (e.g. "1996–2010").
+ * Changes under SIMILAR_THRESHOLD read "similar to <ref>"; otherwise "about X °C warmer than in <ref>".
+ * With ref = null the reference is left out, for the second half of a sentence where the first half named it.
+ */
+function changePhrase(d, ref) {
+  if (Math.abs(d) < SIMILAR_THRESHOLD) return ref ? `similar to ${ref}` : 'similar';
+  const amount = `about ${fmt(Math.abs(d))} °C ${d > 0 ? 'warmer' : 'cooler'}`;
+  return ref ? `${amount} than in ${ref}` : amount;
+}
+
+/** "highs<where> were <phrase>, and lows <phrase>" with the reference named once. */
+const highsAndLows = (where, verb, hd, ld, ref) =>
+  `highs${where} ${verb} ${changePhrase(hd, ref)}, and lows ${changePhrase(ld, null)}`;
 
 export const dateLabel = (month, day) => `${day} ${MONTHS[month - 1]}`;
+
+/** The plain-language trend sentences (2–3) from the high and low trend numbers. */
+export function trendSentences({ city, when, firstYear, highTrend, lowTrend }) {
+  const sign = (x) => (x >= 0 ? '+' : '−');
+  return [
+    `Over the last ${RECENT_YEARS} years (${range(highTrend.recentRange)}), ` +
+      `${highsAndLows(` around ${when} in ${city}`, 'were', highTrend.vsPrevious, lowTrend.vsPrevious, range(highTrend.previousRange))}.`,
+    highTrend.vsBaseline !== null
+      ? `H${highsAndLows('', 'are', highTrend.vsBaseline, lowTrend.vsBaseline, `${BASELINE[0]}–${BASELINE[1]}`).slice(1)}.`
+      : '',
+    `Since ${firstYear}, highs have changed by ${sign(highTrend.perDecade)}${fmt(Math.abs(highTrend.perDecade))} °C ` +
+      `and lows by ${sign(lowTrend.perDecade)}${fmt(Math.abs(lowTrend.perDecade))} °C per decade ` +
+      `(trend based on the week either side of ${when}).`,
+  ].filter(Boolean);
+}
 
 /**
  * Build everything the page needs for one city.
@@ -178,20 +206,9 @@ export function analyse({ city, history, today }) {
     `Based on ${high.years} years of data (${high.firstYear}–${high.lastYear}).`,
   ];
 
-  let trendText = [];
-  if (highTrend && lowTrend) {
-    const [a, b] = highTrend.recentRange;
-    trendText = [
-      `Over the last ${RECENT_YEARS} years (${a}–${b}), highs around ${when} in ${city} were ` +
-        `${change(highTrend.vsPrevious)} the ${RECENT_YEARS} years before, and lows were ${change(lowTrend.vsPrevious)}.`,
-      highTrend.vsBaseline !== null
-        ? `Compared with ${BASELINE[0]}–${BASELINE[1]}, highs are ${change(highTrend.vsBaseline)} and lows are ${change(lowTrend.vsBaseline)}.`
-        : '',
-      `Since ${high.firstYear}, highs have changed by ${highTrend.perDecade >= 0 ? '+' : '−'}${fmt(Math.abs(highTrend.perDecade))} °C ` +
-        `and lows by ${lowTrend.perDecade >= 0 ? '+' : '−'}${fmt(Math.abs(lowTrend.perDecade))} °C per decade ` +
-        `(trend based on the week either side of ${when}).`,
-    ].filter(Boolean);
-  }
+  const trendText = highTrend && lowTrend
+    ? trendSentences({ city, when, firstYear: high.firstYear, highTrend, lowTrend })
+    : [];
 
   return { high, low, highSeries, lowSeries, highTrend, lowTrend, summary, trendText };
 }

@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   toMap, dateInYear, sameDateSeries, windowSeries, percentile, rank, label,
-  trendPerDecade, ordinal, analyse,
+  trendPerDecade, ordinal, analyse, trendSentences,
 } from '../src/stats.js';
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
@@ -101,7 +101,7 @@ test('analyse end to end on a warming synthetic city', () => {
   close(r.lowTrend.perDecade, 0.3, 1e-6);
   assert.match(r.summary[0], /^Today's high of 50\.0 °C in Testville is in the 100th percentile for 5 November since 1940 \(1st warmest of 87/);
   assert.match(r.summary[1], /^Tonight's low of -50\.0 °C is in the 0th percentile/);
-  assert.match(r.trendText.join(' '), /about the same as the 15 years before/);
+  assert.match(r.trendText.join(' '), /similar to 1996–2010/);
   assert.match(r.trendText.join(' '), /\+0\.2 °C and lows by \+0\.3 °C per decade/);
 });
 
@@ -112,4 +112,50 @@ test('analyse labels yesterday when not a forecast', () => {
     today: { date: '2026-01-10', max: 10, min: 0, isForecast: false },
   });
   assert.match(r.summary[0], /^Yesterday's high/);
+});
+
+// --- Trend sentences: check the exact wording so incomplete phrases can't come back. ---
+
+const ranges = { recentRange: [2011, 2025], previousRange: [1996, 2010] };
+const tr = (vsPrevious, vsBaseline, perDecade) => ({ ...ranges, vsPrevious, vsBaseline, perDecade });
+const sentences = (highTrend, lowTrend) =>
+  trendSentences({ city: 'Berlin', when: '7 November', firstYear: 1940, highTrend, lowTrend });
+
+test('trend sentences: both halves are complete when warmer', () => {
+  assert.deepEqual(sentences(tr(1.5, 2.2, 0.4), tr(0.7, 1.4, 0.3)), [
+    'Over the last 15 years (2011–2025), highs around 7 November in Berlin were about 1.5 °C warmer than in 1996–2010, and lows about 0.7 °C warmer.',
+    'Highs are about 2.2 °C warmer than in 1951–1980, and lows about 1.4 °C warmer.',
+    'Since 1940, highs have changed by +0.4 °C and lows by +0.3 °C per decade (trend based on the week either side of 7 November).',
+  ]);
+});
+
+test('trend sentences: cooler is worded as cooler, with a minus sign for the decade trend', () => {
+  const [first, , third] = sentences(tr(-1.2, -0.9, -0.1), tr(-0.6, -0.7, -0.2));
+  assert.equal(first, 'Over the last 15 years (2011–2025), highs around 7 November in Berlin were about 1.2 °C cooler than in 1996–2010, and lows about 0.6 °C cooler.');
+  assert.match(third, /highs have changed by −0\.1 °C and lows by −0\.2 °C per decade/);
+});
+
+test('trend sentences: changes under 0.5 °C read "similar to"', () => {
+  const [first, second] = sentences(tr(0.3, 0.49, 0.1), tr(-0.2, 0.1, 0.0));
+  assert.equal(first, 'Over the last 15 years (2011–2025), highs around 7 November in Berlin were similar to 1996–2010, and lows similar.');
+  assert.equal(second, 'Highs are similar to 1951–1980, and lows similar.');
+});
+
+test('trend sentences: exactly 0.5 °C counts as a real change; mixed halves stay complete', () => {
+  const [first] = sentences(tr(0.2, 0.2, 0.1), tr(0.5, 0.5, 0.1));
+  assert.equal(first, 'Over the last 15 years (2011–2025), highs around 7 November in Berlin were similar to 1996–2010, and lows about 0.5 °C warmer.');
+});
+
+test('trend sentences: baseline sentence is dropped when 1951–1980 data is missing', () => {
+  const out = sentences(tr(1.0, null, 0.2), tr(1.0, null, 0.2));
+  assert.equal(out.length, 2);
+  assert.match(out[1], /^Since 1940/);
+});
+
+test('trend sentences never end a half with a dangling "than"', () => {
+  for (const d of [-3, -0.5, -0.49, 0, 0.49, 0.5, 3]) {
+    const text = sentences(tr(d, d, d), tr(-d, -d, -d)).join(' ');
+    assert.doesNotMatch(text, /than[,.]/);
+    assert.doesNotMatch(text, /than and/);
+  }
 });
