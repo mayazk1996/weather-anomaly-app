@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather Anomaly App</title>
+</head>
+<body>
+  <h1>Weather Anomaly App</h1>
+  <p>How does today's temperature compare with the same date every year since 1940?</p>
+
+  <p>
+    <label for="country">Country</label>
+    <select id="country"></select>
+  </p>
+  <p>
+    <label for="city">City</label>
+    <select id="city" disabled></select>
+  </p>
+
+  <p id="status" role="status"></p>
+
+  <section id="results" hidden>
+    <h2 id="results-title"></h2>
+    <p id="today"></p>
+    <div id="summary"></div>
+    <div id="trend"></div>
+  </section>
+
+  <p id="note" hidden>
+    History comes from modelled reanalysis data on a grid, not from weather station readings.
+  </p>
+
+  <p>Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0)</p>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
