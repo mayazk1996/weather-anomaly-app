@@ -92,9 +92,12 @@ and approved by the user, so don't change it without asking.
   noise, use a window of **±7 days** around today's date in each year. For both
   highs and lows, compare the average over the last 15 years with (a) the 15 years
   before that and (b) the 1951–1980 reference period, and give the linear trend
-  since 1940 in °C per decade. If the recent change is
-  less than 0.5 °C, describe it as "similar to recent years". Mention in the text
-  that the trend is based on the week either side of the date.
+  since 1940 in °C per decade. Name the comparison period once per sentence and
+  keep each half complete, e.g. "highs were about 1.5 °C warmer than in 1996–2010,
+  and lows about 0.7 °C warmer". If a change is less than 0.5 °C, say it is
+  "similar to" that period (e.g. "highs were similar to 1996–2010, and lows
+  similar"). Mention in the text that the trend is based on the week either side
+  of the date.
 - **29 February:** compare it with 28 February in non-leap years.
 - **Missing years:** skip them, and state how many years were used.
 - Put the statistics logic in `src/stats.js`, separate from the UI, with unit tests.
