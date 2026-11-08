@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+
+# Node
+node_modules/
